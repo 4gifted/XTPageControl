@@ -81,6 +81,7 @@ static CGFloat kXTDefaultTabBarHeight = 35;
 }
 
 - (void)setup:(XTTabBarStyle)style {
+    self.view.backgroundColor = [UIColor whiteColor];
     NSAssert(self.dataSource != nil, @"XTPageViewController必须设置dataSource");
     self.nextIndex = -1;
     self.cachedControllers = [NSMutableDictionary dictionary];
@@ -94,9 +95,7 @@ static CGFloat kXTDefaultTabBarHeight = 35;
     for (NSInteger i=0; i<numberOfPages; i++) {
         [titles addObject:[self.dataSource titleOfPage:i]];
     }
-    self.tabBar = [[XTTabBar alloc] initWithTitles:titles andStyle:style];
-    self.tabBar.tabBarDelegate = self;
-    self.tabBar.forceLeftAligment = self.forceLeftAligment;
+    self.tabBar = [self createTabBar:titles style:style];
     [self.view addSubview:self.tabBar];
     
     self.underlineView = [[UIView alloc] init];
@@ -115,69 +114,45 @@ static CGFloat kXTDefaultTabBarHeight = 35;
     [self.tabBar moveToIndex:0];
 }
 
+- (XTTabBar*)createTabBar:(NSArray<NSString*>*)titles style:(XTTabBarStyle)style {
+    XTTabBar* tabBar = [[XTTabBar alloc] initWithTitles:titles andStyle:style];
+    tabBar.tabBarDelegate = self;
+    tabBar.forceLeftAligment = self.forceLeftAligment;
+    if (self.tabBarCursorColor) {
+        tabBar.cursorColor = self.tabBarCursorColor;
+    }
+    if (self.tabBarTitleColorNormal) {
+        tabBar.titleColorNormal = self.tabBarTitleColorNormal;
+    }
+    if (self.tabBarTitleColorSelected) {
+        tabBar.titleColorSelected = self.tabBarTitleColorSelected;
+    }
+    if (self.tabBarLeftItemView) {
+        tabBar.leftItemView = self.tabBarLeftItemView;
+    }
+    if (self.tabBarRightItemView) {
+        tabBar.rightItemView = self.tabBarRightItemView;
+    }
+    if (self.tabBarBackgroundColor) {
+        tabBar.backgroundColor = self.tabBarBackgroundColor;
+    }
+    return tabBar;
+}
+
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    self.tabBar.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.tabBarHeight);
+    self.tabBar.frame = CGRectMake(0, [self.topLayoutGuide length], self.view.bounds.size.width, self.tabBarHeight);
     
-    self.underlineView.frame = CGRectMake(0, self.tabBarHeight, self.view.bounds.size.width, 1.0);
+    self.underlineView.frame = CGRectMake(0, [self.topLayoutGuide length] + self.tabBarHeight, self.view.bounds.size.width, 1.0);
     
-    self.pageScrollView.frame = CGRectMake(0, self.tabBarHeight + 1.0, self.view.bounds.size.width, self.view.bounds.size.height - self.tabBarHeight - 1.0);
+    self.pageScrollView.frame = CGRectMake(0, [self.topLayoutGuide length] + self.tabBarHeight + 1.0, self.view.bounds.size.width, self.view.bounds.size.height - self.tabBarHeight - 1.0);
     
     if (self.dataSource) {
         NSInteger numberOfPages = [self.dataSource numberOfPages];
         self.pageScrollView.contentSize = CGSizeMake(numberOfPages * self.pageScrollView.bounds.size.width, self.pageScrollView.bounds.size.height);
     }
 }
-
-- (void)setTabBarCursorColor:(UIColor *)tabBarCursorColor {
-    self.tabBar.cursorColor = tabBarCursorColor;
-}
-
-- (UIColor*)tabBarCursorColor {
-    return self.tabBar.cursorColor;
-}
-
-- (void)setTabBarTitleColorNormal:(UIColor *)tabBarTitleColorNormal {
-    self.tabBar.titleColorNormal = tabBarTitleColorNormal;
-}
-
-- (UIColor*)tabBarTitleColorNormal {
-    return self.tabBar.titleColorNormal;
-}
-
-- (void)setTabBarTitleColorSelected:(UIColor *)tabBarTitleColorSelected {
-    self.tabBar.titleColorSelected = tabBarTitleColorSelected;
-}
-
-- (UIColor*)tabBarTitleColorSelected {
-    return self.tabBar.titleColorSelected;
-}
-
-- (void)setTabBarLeftItemView:(UIView *)tabBarLeftItemView {
-    self.tabBar.leftItemView = tabBarLeftItemView;
-}
-
-- (UIView*)tabBarLeftItemView {
-    return self.tabBar.leftItemView;
-}
-
-- (void)setTabBarRightItemView:(UIView *)tabBarRightItemView {
-    self.tabBar.rightItemView = tabBarRightItemView;
-}
-
-- (UIView*)tabBarRightItemView {
-    return self.tabBar.rightItemView;
-}
-
-- (void)setTabBarBackgroundColor:(UIColor *)tabBarBackgroundColor {
-    self.tabBar.backgroundColor = tabBarBackgroundColor;
-}
-
-- (UIColor*)tabBarBackgroundColor {
-    return self.tabBar.backgroundColor;
-}
-
 
 #pragma mark tabbar delegate 
 - (void)willChanged:(NSInteger)preIndex nextIndex:(NSInteger)nextIndex {

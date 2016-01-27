@@ -16,6 +16,7 @@
 }
 
 - (void)setup {
+    self.view.backgroundColor = [UIColor whiteColor];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
 }
 
@@ -25,7 +26,7 @@
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"cell"];
-    cell.textLabel.text = [NSString stringWithFormat:@"我是第%d行数据", indexPath.row];
+    cell.textLabel.text = [NSString stringWithFormat:@"我是第%ld行数据", (long)indexPath.row];
     return cell;
 }
 

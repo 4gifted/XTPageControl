@@ -28,6 +28,7 @@
 }
 
 - (void)setup {
+    self.backgroundColor = [UIColor whiteColor];
     self.tabBarScrollView = [[XTTabBarScrollView alloc] initWithTitles:self.titles andStyle:self.tabBarStyle];
     [self addSubview:self.tabBarScrollView];
 }
